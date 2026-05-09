@@ -1,5 +1,11 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOST=0.0.0.0
+ENV DATA_DIR=/data
+ENV DATABASE_URL=file:/data/meshmonitor.db
+ENV ALLOWED_ORIGINS=*
+ENV TRUST_PROXY=true
+ENV LOG_LEVEL=info
