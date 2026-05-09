@@ -1,12 +1,30 @@
-ARG BUILD_FROM=ghcr.io/yeraze/meshmonitor:latest
-FROM ${BUILD_FROM}
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
-# Install jq for parsing options.json and curl for API calls
-RUN apk add --no-cache jq curl
+RUN apk add --no-cache \
+    nodejs \
+    npm \
+    git \
+    curl \
+    bash \
+    sqlite \
+    jq \
+    tzdata
 
-# Copy the startup script
+WORKDIR /opt
+RUN git clone --recurse-submodules --depth=1 https://github.com/Yeraze/meshmonitor.git meshmonitor
+
+WORKDIR /opt/meshmonitor
+RUN npm ci --prefer-offline 2>/dev/null || npm install
+RUN npm run build
+RUN npm run build:server
+
+RUN mkdir -p /data/meshmonitor
+
 COPY run.sh /run.sh
-RUN chmod a+x /run.sh
+RUN chmod +x /run.sh
 
-# Set the entrypoint to our startup script
-ENTRYPOINT ["/run.sh"]
+EXPOSE 3001
+VOLUME ["/data/meshmonitor"]
+
+CMD [ "/run.sh" ]
