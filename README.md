@@ -28,7 +28,7 @@ Ten add-on zawsze uruchamia **najnowszą wersję** z oficjalnego obrazu Docker `
 ## Dostęp
 
 Po uruchomieniu MeshMonitor jest dostępny pod adresem:
-
+http://homeassistant.local:8099
 http://'adres-HA':8099
 
 Domyślne dane logowania:
