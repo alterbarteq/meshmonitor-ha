@@ -15,7 +15,7 @@ WORKDIR /opt
 RUN git clone --recurse-submodules --depth=1 https://github.com/Yeraze/meshmonitor.git meshmonitor
 
 WORKDIR /opt/meshmonitor
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --no-cache
 RUN npm run build
 RUN npm run build:server
 
