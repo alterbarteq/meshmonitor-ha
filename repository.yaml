@@ -1,4 +1,3 @@
-# https://developers.home-assistant.io/docs/add-ons/repository
-name: Home Assistant MeshMonitor Add-on
-url: "https://github.com/bhardie/ha-meshmonitor"
-maintainer: "Brian Hardie"
+name: "MeshMonitor HA by alterbarteq"
+url: "https://github.com/alterbarteq/meshmonitor-ha"
+maintainer: "alterbarteq"
