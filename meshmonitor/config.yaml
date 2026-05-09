@@ -1,27 +1,42 @@
 name: "MeshMonitor"
-description: "Web-based monitoring for Meshtastic mesh networks"
-version: "0.0.9"
+description: "Web application for monitoring Meshtastic mesh networks over IP. Always runs the latest Yeraze/meshmonitor."
+version: "1.0.0"
 slug: "meshmonitor"
-arch:
-  - aarch64
-  - amd64
-  - armhf
-  - armv7
-  - i386
+init: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+ingress: true
+ingress_port: 3001
+ingress_stream: false
+panel_icon: "mdi:radio-tower"
+panel_title: "MeshMonitor"
 
-startup: application
-boot: auto
-homeassistant_api: true
+map:
+  - share:rw
 
 ports:
-  3001/tcp: 3001
+  3001/tcp: 8099
 
-webui: "http://[HOST]:[PORT:3001]/"
+ports_description:
+  3001/tcp: "MeshMonitor Web UI"
 
 options:
   meshtastic_node_ip: "192.168.1.100"
-  allowed_origins: ""
+  meshtastic_node_port: 4403
+  admin_password: "changeme"
+  ha_url: "http://homeassistant.local:8099"
+  log_level: "info"
+  timezone: "Europe/Warsaw"
+  session_secret: ""
+  auto_upgrade: false
 
 schema:
   meshtastic_node_ip: str
-  allowed_origins: str?
+  meshtastic_node_port: int
+  admin_password: str
+  ha_url: str
+  log_level: list(debug|info|warn|error)
+  timezone: str
+  session_secret: str
+  auto_upgrade: bool
