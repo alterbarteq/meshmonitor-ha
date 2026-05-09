@@ -1,7 +1,7 @@
 name: "MeshMonitor"
 description: "Web application for monitoring Meshtastic mesh networks over IP. Always runs the latest Yeraze/meshmonitor."
 version: "1.0.0"
-slug: "meshmonitor"
+slug: "meshmonitor_new"
 init: false
 homeassistant_api: false
 hassio_api: false
