@@ -1,92 +1,45 @@
-#!/bin/sh
-set -e
+#!/usr/bin/with-contenv bashio
 
-# Read configuration from Home Assistant options
-CONFIG_PATH=/data/options.json
+bashio::log.info "Konfigurowanie MeshMonitor..."
 
-# Get configuration from options using jq
-if [ -f "$CONFIG_PATH" ]; then
-    MESHTASTIC_NODE_IP=$(jq -r '.meshtastic_node_ip // "192.168.1.100"' $CONFIG_PATH)
-    CONFIGURED_ORIGINS=$(jq -r '.allowed_origins // ""' $CONFIG_PATH)
-    echo "Starting MeshMonitor with Meshtastic Node IP: ${MESHTASTIC_NODE_IP}"
-else
-    echo "No options.json found, using defaults"
-    MESHTASTIC_NODE_IP="192.168.1.100"
-    CONFIGURED_ORIGINS=""
+# Wczytaj opcje z Home Assistant
+NODE_IP=$(bashio::config 'meshtastic_node_ip')
+NODE_PORT=$(bashio::config 'meshtastic_node_port')
+ADMIN_PASS=$(bashio::config 'admin_password')
+LOG_LEVEL=$(bashio::config 'log_level')
+TZ=$(bashio::config 'timezone')
+HA_URL=$(bashio::config 'ha_url')
+SESSION_SECRET=$(bashio::config 'session_secret')
+
+# Jeśli session_secret jest puste, wygeneruj losowy
+if [ -z "${SESSION_SECRET}" ]; then
+    SESSION_SECRET=$(cat /proc/sys/kernel/random/uuid | tr -d '-')
 fi
 
-# Export the environment variable for meshmonitor
-export MESHTASTIC_NODE_IP
+mkdir -p /data/meshmonitor
 
-# Configure ALLOWED_ORIGINS for CORS
-if [ -n "$CONFIGURED_ORIGINS" ]; then
-    # User has manually configured allowed origins
-    export ALLOWED_ORIGINS="$CONFIGURED_ORIGINS"
-    echo "Using manually configured ALLOWED_ORIGINS: $ALLOWED_ORIGINS"
-else
-    # Try to auto-detect from Supervisor API
-    echo "No manual ALLOWED_ORIGINS configured, attempting auto-detection..."
+cat > /opt/meshmonitor/.env.production << EOF
+MESHTASTIC_NODE_IP=${NODE_IP}
+MESHTASTIC_NODE_PORT=${NODE_PORT}
+PORT=3001
+HOST=0.0.0.0
+NODE_ENV=production
+DATA_DIR=/data/meshmonitor
+DATABASE_URL=file:/data/meshmonitor/meshmonitor.db
+ALLOWED_ORIGINS=${HA_URL},*
+IFRAME_ALLOWED_ORIGINS=${HA_URL}
+SESSION_SECRET=${SESSION_SECRET}
+TRUST_PROXY=true
+LOG_LEVEL=${LOG_LEVEL}
+TZ=${TZ}
+EOF
 
-    if [ -n "$SUPERVISOR_TOKEN" ]; then
-        echo "Querying Supervisor API for Home Assistant URLs..."
-        HA_CONFIG=$(curl -sSL --max-time 5 \
-            -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
-            -H "Content-Type: application/json" \
-            http://supervisor/core/api/config 2>&1 || echo "{}")
-
-        # Extract external_url and internal_url if they exist
-        EXTERNAL_URL=$(echo "$HA_CONFIG" | jq -r '.external_url // empty' 2>/dev/null || echo "")
-        INTERNAL_URL=$(echo "$HA_CONFIG" | jq -r '.internal_url // empty' 2>/dev/null || echo "")
-
-        # Check if they're null
-        if [ "$EXTERNAL_URL" = "null" ]; then
-            EXTERNAL_URL=""
-        fi
-        if [ "$INTERNAL_URL" = "null" ]; then
-            INTERNAL_URL=""
-        fi
-
-        # Build ALLOWED_ORIGINS list
-        ORIGINS=""
-        if [ -n "$EXTERNAL_URL" ]; then
-            ORIGINS="$EXTERNAL_URL"
-            echo "Auto-detected external URL: $EXTERNAL_URL"
-        fi
-        if [ -n "$INTERNAL_URL" ]; then
-            if [ -n "$ORIGINS" ]; then
-                ORIGINS="$ORIGINS,$INTERNAL_URL"
-            else
-                ORIGINS="$INTERNAL_URL"
-            fi
-            echo "Auto-detected internal URL: $INTERNAL_URL"
-        fi
-
-        if [ -n "$ORIGINS" ]; then
-            export ALLOWED_ORIGINS="$ORIGINS"
-            echo "Auto-configured ALLOWED_ORIGINS: $ALLOWED_ORIGINS"
-        else
-            echo "WARNING: Could not auto-detect Home Assistant URLs"
-            echo "The Supervisor API returned null for external_url and internal_url"
-            echo ""
-            echo "To improve security, manually configure allowed_origins in the add-on configuration"
-            echo "with a comma-separated list of URLs you use to access Home Assistant, e.g.:"
-            echo "  http://homeassistant.local:8123,http://192.168.1.10:8123"
-            echo ""
-            echo "Falling back to ALLOWED_ORIGINS='*' (all origins allowed - less secure)"
-            export ALLOWED_ORIGINS="*"
-        fi
-    else
-        echo "WARNING: SUPERVISOR_TOKEN not available"
-        echo "Falling back to ALLOWED_ORIGINS='*' (all origins allowed)"
-        export ALLOWED_ORIGINS="*"
-    fi
+if [ ! -f "/data/meshmonitor/.initialized" ]; then
+    bashio::log.info "Pierwsze uruchomienie - ustawiam haslo admina..."
+    echo "ADMIN_PASSWORD=${ADMIN_PASS}" >> /opt/meshmonitor/.env.production
+    touch /data/meshmonitor/.initialized
 fi
 
-# Execute the original entrypoint and command
-# Filter logs to reduce disk space usage while keeping important messages:
-# - Keep lines with [WARN] or [ERROR] tags
-# - Keep lines without any log level tags (startup messages, supervisord output)
-# - Filter out [INFO] and [DEBUG] messages which can be very verbose
-# To see all logs, remove the grep filter below
-exec /usr/local/bin/docker-entrypoint.sh /usr/bin/supervisord -c /etc/supervisord.conf 2>&1 | \
-  grep -v -E "^\[(INFO|DEBUG)\]" || true
+bashio::log.info "Uruchamiam MeshMonitor..."
+cd /opt/meshmonitor
+exec node dist/server/index.js
