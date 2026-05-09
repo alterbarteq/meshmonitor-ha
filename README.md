@@ -29,7 +29,7 @@ Ten add-on zawsze uruchamia **najnowszą wersję** z oficjalnego obrazu Docker `
 
 Po uruchomieniu MeshMonitor jest dostępny pod adresem:
 
-http://<adres-HA>:8099
+http://'adres-HA':8099
 
 Domyślne dane logowania:
 - Login: `admin`
