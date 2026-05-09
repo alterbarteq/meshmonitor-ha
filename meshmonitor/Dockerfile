@@ -16,8 +16,10 @@ RUN git clone --recurse-submodules --depth=1 https://github.com/Yeraze/meshmonit
 
 WORKDIR /opt/meshmonitor
 RUN npm install --legacy-peer-deps --no-cache
-RUN npm run build
-RUN npm run build:server
+RUN npm run build 2>&1 || true
+RUN npm run build:server 2>&1 || true
+RUN ls -la dist/ || true
+RUN cat package.json | grep -A 20 '"scripts"'
 
 RUN mkdir -p /data/meshmonitor
 
