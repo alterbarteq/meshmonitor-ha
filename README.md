@@ -73,8 +73,7 @@ The existing add-on [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshm
 ### Access
 
 After starting, MeshMonitor is available at:
-[http://<HA-address>:8099](http://<adres-HA>:8099 (http://homeassistant.local:8099))
-
+http://<adres-HA>:8099 (http://homeassistant.local:8099)
 Default credentials: `admin` / `changeme` — **change your password after first login!**
 
 ### How it works
