@@ -17,9 +17,10 @@ map:
 
 ports:
   3001/tcp: 8099
-
+  4404/tcp: 4404
 ports_description:
   3001/tcp: "MeshMonitor Web UI"
+  4404/tcp: "MeshMonitor Virtual Node"
 
 options:
   meshtastic_node_ip: "192.168.1.100"
