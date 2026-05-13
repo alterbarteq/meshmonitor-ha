@@ -1,65 +1,65 @@
-# Home Assistant Add-on: MeshMonitor
+# meshmonitor-ha
 
-MeshMonitor is a comprehensive web application for monitoring Meshtastic mesh networks over IP.
+🇵🇱 [Polski](#polski) | 🇬🇧 [English](#english)
 
-## About
+---
 
-This add-on wraps the [MeshMonitor](https://github.com/yeraze/meshmonitor) application, providing real-time visibility into your Meshtastic mesh network deployment with features like:
+## Polski
 
-- Live node discovery
-- Telemetry tracking
-- Network visualization
-- Message monitoring
+Home Assistant Add-on uruchamiający [MeshMonitor](https://github.com/Yeraze/meshmonitor) — narzędzie do monitorowania sieci Meshtastic.
 
-## Installation
+### Dlaczego ten add-on?
 
-1. Add this repository to your Home Assistant add-on store
-2. Install the "MeshMonitor" add-on
-3. Configure your Meshtastic node IP address
-4. Start the add-on
-5. Access the web interface
+Istniejący add-on [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshmonitor) jest przestarzały i używa wersji 3.6.3. Ten add-on zawsze uruchamia **najnowszą wersję** z oficjalnego obrazu Docker `ghcr.io/yeraze/meshmonitor:latest`.
 
-## Configuration
+### Instalacja
 
-### Option: `meshtastic_node_ip`
+1. W Home Assistant przejdź do **Ustawienia → Aplikacje → Zainstaluj aplikację**
+2. Kliknij menu **(⋮) → Repozytoria**
+3. Dodaj: `https://github.com/alterbarteq/meshmonitor-ha`
+4. Znajdź **MeshMonitor** i kliknij **Zainstaluj**
+5. Skonfiguruj add-on i kliknij **Uruchom**
 
-The IP address of your Meshtastic node on your network.
+### Konfiguracja
 
-**Required**: Yes
+| Opcja | Opis | Domyślnie |
+|-------|------|-----------|
+| `meshtastic_node_ip` | Adres IP węzła Meshtastic | `192.168.1.100` |
+| `meshtastic_node_port` | Port TCP węzła | `4403` |
+| `admin_password` | Hasło admina (tylko pierwsze uruchomienie) | `changeme` |
+| `log_level` | Poziom logowania | `info` |
+| `timezone` | Strefa czasowa | `Europe/Warsaw` |
 
-**Default**: `192.168.1.100`
+### Dostęp
 
-Example:
-```yaml
-meshtastic_node_ip: "192.168.1.150"
-```
+Po uruchomieniu MeshMonitor jest dostępny pod adresem:
+http://<adres-HA>:8099 (http://homeassistant.local:8099)
 
-### Option: `allowed_origins`
+Domyślne dane logowania: `admin` / `changeme` — **zmień hasło po pierwszym logowaniu!**
 
-Comma-separated list of allowed origins for CORS (Cross-Origin Resource Sharing). This controls which URLs are allowed to access the MeshMonitor web interface.
+### Podziękowania
 
-**Required**: No
+- [Yeraze/meshmonitor](https://github.com/Yeraze/meshmonitor) — autor MeshMonitor
+- [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshmonitor) — inspiracja dla struktury add-ona
 
-**Default**: Auto-detect from Home Assistant, fallback to `*` (all origins)
+---
 
-**IMPORTANT**: Use the port configured in the "Network" section of this add-on's configuration (default: 3001), NOT Home Assistant's port (8123).
+## English
 
-Example:
-```yaml
-allowed_origins: "http://homeassistant.local:3001,http://192.168.1.10:3001,https://abcdefg123.ui.nabu.casa:3001"
-```
+Home Assistant Add-on running [MeshMonitor](https://github.com/Yeraze/meshmonitor) — a web application for monitoring Meshtastic mesh networks.
 
-**When to configure this:**
-- You experience login failures with "Invalid username or password" or CORS errors
-- You access Home Assistant from multiple URLs (hostname, IP, external domain, etc.)
-- Auto-detection is not working (API returns null)
-- You want explicit control over CORS security
+### Why this add-on?
 
-**How to determine your URLs:**
-1. Check Settings → Add-ons → MeshMonitor → Configuration → Network
-2. Note the port number (default is 3001)
-3. List all the hostnames/IPs you use to access Home Assistant, using the MeshMonitor port
-4. Include all variations: `http://hostname:3001`, `http://ip:3001`, `https://external-domain:3001`
+The existing add-on [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshmonitor) is outdated and uses version 3.6.3. This add-on always runs the **latest version** from the official Docker image `ghcr.io/yeraze/meshmonitor:latest`.
+
+### Installation
+
+1. In Home Assistant go to **Settings → Add-ons → Add-on Store**
+2. Click the menu **(⋮) → Repositories**
+3. Add: `https://github.com/alterbarteq/meshmonitor-ha`
+4. Find **MeshMonitor** and click **Install**
+5. Configure the add-on and click **Start**
+
 
 If not configured, the add-on will attempt to auto-detect your Home Assistant URLs from the Supervisor API. If auto-detection fails, it falls back to allowing all origins (`*`), which works but is less secure.
 
