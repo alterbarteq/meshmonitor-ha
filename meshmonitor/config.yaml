@@ -46,12 +46,9 @@ schema:
 host_network: true
 
 devices:
-  - path: /dev/ttyUSB0
-    cgroup: true
+  - /dev/ttyUSB0
 
 arch:
   - aarch64
   - amd64
-  - armhf
   - armv7
-  - i386
