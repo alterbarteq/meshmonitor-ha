@@ -1,4 +1,4 @@
-# meshmonitor-ha
+# MeshMonitor Home Assistant Add-on
 
 🇵🇱 [Polski](#polski) | 🇬🇧 [English](#english)
 
@@ -33,9 +33,14 @@ Istniejący add-on [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshmo
 ### Dostęp
 
 Po uruchomieniu MeshMonitor jest dostępny pod adresem:
-http://<adres-HA>:8099 (http://homeassistant.local:8099)
+http://<HA-address>:8099
 
 Domyślne dane logowania: `admin` / `changeme` — **zmień hasło po pierwszym logowaniu!**
+
+### Obsługiwane źródła
+
+- ✅ **TCP/IP** — węzeł Meshtastic z WiFi lub Ethernet
+- ✅ **MeshCore przez USB** — urządzenie podłączone przez USB (CP2102, CH340 itp.) dostępne pod `/dev/ttyUSB0`
 
 ### Podziękowania
 
@@ -73,12 +78,14 @@ The existing add-on [bhardie/ha-meshmonitor](https://github.com/bhardie/ha-meshm
 ### Access
 
 After starting, MeshMonitor is available at:
-http://<adres-HA>:8099 (http://homeassistant.local:8099)
+http://<HA-address>:8099
+
 Default credentials: `admin` / `changeme` — **change your password after first login!**
 
-### How it works
+### Supported sources
 
-The add-on pulls the official Docker image `ghcr.io/yeraze/meshmonitor:latest` — always the newest version. Data (SQLite database) is stored in `/data` and survives updates and restarts.
+- ✅ **TCP/IP** — Meshtastic node with WiFi or Ethernet
+- ✅ **MeshCore via USB** — device connected via USB (CP2102, CH340 etc.) available at `/dev/ttyUSB0`
 
 ### Credits
 
