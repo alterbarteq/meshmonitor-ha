@@ -43,7 +43,6 @@ schema:
   session_secret: str
   auto_upgrade: bool
 
-host_network: true
 
 devices:
   - /dev/ttyUSB0
