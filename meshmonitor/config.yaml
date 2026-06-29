@@ -1,6 +1,6 @@
 name: "MeshMonitor"
 description: "Web application for monitoring Meshtastic mesh networks over IP. Always runs the latest Yeraze/meshmonitor."
-version: "1.0.4"
+version: "1.0.5"
 slug: "meshmonitor_new"
 init: false
 homeassistant_api: false
@@ -11,6 +11,10 @@ ingress_port: 3001
 ingress_stream: false
 panel_icon: "mdi:radio-tower"
 panel_title: "MeshMonitor"
+
+privileged:
+  - SYS_ADMIN
+apparmor: false
 
 map:
   - share:rw
@@ -43,9 +47,9 @@ schema:
   session_secret: str
   auto_upgrade: bool
 
-
 devices:
   - /dev/ttyUSB0
+  - /dev/ttyACM0
 
 arch:
   - aarch64
